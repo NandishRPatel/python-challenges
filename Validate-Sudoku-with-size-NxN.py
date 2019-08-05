@@ -1,3 +1,5 @@
+from math import sqrt
+
 class Sudoku(object):
 	def __init__(self, data):
 		self.data = data
@@ -6,7 +8,11 @@ class Sudoku(object):
 		if len(self.data) > 0:
 			if self.is_square():
 				if self.is_valid_values():
-					if self.is_valid_row_col_wise(self.data): return True
+					if self.is_valid_row_col_wise(self.data):
+						boxes = [[i, i + int(sqrt(len(self.data)))] for i in range(0, len(self.data), int(sqrt(len(self.data))))]
+						for n in range(len(boxes) - 1):
+							if not self.is_little_square(boxes[n], set(self.data[0])): return False
+						return True
 					else: return False
 				else: return False
 			else: return False
@@ -19,8 +25,11 @@ class Sudoku(object):
 	def is_valid_values(self):
 		return all( (type(i) == type(1)) and ((i >= 1 and i <= len(self.data))) for row in self.data for i in row)
 
-	def is_little_square(self):
-		
+	def is_little_square(self, box, row):
+		if set([self.data[i][j] for i in range(box[0], box[0] + int(sqrt(len(self.data)))) for j in range(box[1], box[1] + int(sqrt(len(self.data))))]) != row:
+			return False
+		return True
+
 
 	def is_valid_row_col_wise(self, arr):
 		arr_t = map(list, zip(*arr))
